@@ -1,0 +1,5 @@
+{
+  "name": "Particle Sphere 3D",
+  "description": "A real-time interactive 3D particle system with customizable shapes, colors, and dynamic dispersion effects using Three.js.",
+  "requestFramePermissions": []
+}
