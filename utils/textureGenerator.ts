@@ -9,7 +9,8 @@ export const generateParticleTexture = (shape: ParticleShape, color: string): HT
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
-  const ctx = canvas.getContext('2d');
+  // willReadFrequently optimizes the canvas for frequent readback (like creating textures)
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
   if (!ctx) return canvas;
 

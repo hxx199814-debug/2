@@ -70,7 +70,6 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     const positions = new Float32Array(particleCount * 3);
 
     // Initial sphere distribution
-    // Slightly increased radius from 10 to 14 for a larger initial ball
     const radius = 14;
     for (let i = 0; i < particleCount; i++) {
       // Uniform random point in sphere
@@ -121,7 +120,6 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
       frameIdRef.current = requestAnimationFrame(animate);
 
       // Smooth expansion (Fast start, slow end)
-      // Reduced speed slightly to 0.03 for "slowly disperse" feel while maintaining responsiveness
       const lerpSpeed = 0.03;
       currentExpansionRef.current = THREE.MathUtils.lerp(
         currentExpansionRef.current,
@@ -141,8 +139,9 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
         groupRef.current.rotation.x += Math.sin(Date.now() * 0.0005) * 0.0005;
       }
 
-      // Pulse effect (breathing) when contracted
-      if ((!targetExpansionRef.current || targetExpansionRef.current === 1) && pointsRef.current) {
+      // Pulse effect (breathing) when contracted and mostly settled
+      // This prevents the pulse from fighting the lerp during large transitions
+      if (!isExpanded && pointsRef.current && Math.abs(currentExpansionRef.current - 1) < 0.05) {
          const time = Date.now() * 0.001;
          const pulse = 1 + Math.sin(time * 1.5) * 0.02;
          pointsRef.current.scale.setScalar(currentExpansionRef.current * pulse);
@@ -218,8 +217,8 @@ const ThreeCanvas: React.FC<ThreeCanvasProps> = ({
     const deltaX = e.clientX - previousMouseRef.current.x;
     const deltaY = e.clientY - previousMouseRef.current.y;
 
-    // If moved significantly, treat as drag, not click
-    if (Math.abs(deltaX) > 2 || Math.abs(deltaY) > 2) {
+    // If moved significantly (increased threshold to 5px), treat as drag, not click
+    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
       isClickRef.current = false;
     }
 
